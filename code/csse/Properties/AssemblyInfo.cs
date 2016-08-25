@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
-[assembly: AssemblyTitle("csse")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("CSSE")]
+[assembly: AssemblyDescription("C# Scripting Environment")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("csse")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCompany("Daniel Kienböck")]
+[assembly: AssemblyProduct("CSSE")]
+[assembly: AssemblyCopyright("Copyright © 2016 (MIT License)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

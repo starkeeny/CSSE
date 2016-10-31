@@ -19,10 +19,21 @@ namespace csse
         {
             public string[] Arguments { get; private set; }
             public Logger Logger { get; private set; }
-            public ArgumentHandler(string[] arguments, Logger logger)
+            public ArgumentHandler(string[] arguments, Logger logger, bool loadFromCommandLineIfEmpty)
             {
                 this.Arguments = arguments;
                 this.Logger = logger;
+                if(loadFromCommandLineIfEmpty && this.Arguments.Count() == 0)
+                {
+                    LoadArgumentsFromCommandLine();
+                }
+            }
+
+            private void LoadArgumentsFromCommandLine()
+            {
+                Console.Write("Args>");
+                var line = Console.ReadLine();
+                this.Arguments = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             public bool IsMethod(string method, int? countArgsToCheckMin = 1, int? countArgsToCheckMax = null)
@@ -96,7 +107,14 @@ namespace csse
                 string scriptPath = Path.Combine(ScriptFolder, script + ".cs");
                 if (!File.Exists(scriptPath))
                 {
-                    File.Copy(TemplateFile, scriptPath);
+                    if (File.Exists(TemplateFile))
+                    {
+                        File.Copy(TemplateFile, scriptPath);
+                    }
+                    else
+                    {
+                        File.AppendAllText(scriptPath, "");
+                    }
                 }
 
                 StartProcess(EditorPath, scriptPath);
@@ -160,13 +178,16 @@ namespace csse
                 ArchLogPath = Path.Combine(logFolder, "csse.log") + ".000";
 
                 var fileInfo = new FileInfo(LogPath);
-                if (fileInfo.Length > MAXSIZE)
+                if (fileInfo.Exists)
                 {
-                    if (File.Exists(ArchLogPath))
+                    if (fileInfo.Length > MAXSIZE)
                     {
-                        File.Delete(ArchLogPath);
+                        if (File.Exists(ArchLogPath))
+                        {
+                            File.Delete(ArchLogPath);
+                        }
+                        fileInfo.MoveTo(ArchLogPath);
                     }
-                    fileInfo.MoveTo(ArchLogPath);
                 }
                 Directory.CreateDirectory(logFolder);
                 this.debugLoggingEnabled = debugLoggingEnabled;
@@ -289,7 +310,7 @@ namespace csse
 
             var logger = new Logger("./_/log/");
             var output = new Output(logger);
-            var argumentHandler = new ArgumentHandler(args, logger);
+            var argumentHandler = new ArgumentHandler(args, logger, loadFromCommandLineIfEmpty: true);
             var scriptHandler = new ScriptHandler(scriptFolder: "./_/code/",
                                                   templateFile: "./_/template/template.cs",
                                                   environmentFolder: "./_/environment/",

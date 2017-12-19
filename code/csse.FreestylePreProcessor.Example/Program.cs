@@ -1,38 +1,7 @@
-
+﻿using System;
 using System;
-using System.Collections;
-using System.Text;
-using System.IO;
-
-public class FreestyleScriptPrecompiler
-{
-    static public bool Compile(ref string content, string scriptFile, bool isPrimaryScript, Hashtable context)
-    {
-        if (!isPrimaryScript)
-            return false;
-
-        var code = new StringBuilder(4096);
-        code.AppendLine(@"
-//Auto-generated file
-
-using System;
-using System.IO;
 using System.Linq;
 using System.Text;
-");
-
-        bool headerProcessed = false;
-
-        string line;
-
-        using (var sr = new StringReader(content))
-            while ((line = sr.ReadLine()) != null)
-            {
-                if (!headerProcessed && (!line.StartsWith("//") && line.Trim() != "" && (!line.TrimStart().StartsWith("using "))))
-                {
-                    headerProcessed = true;
-                    code.AppendLine(
-@"
 
 namespace ScriptNamespace
 {
@@ -40,7 +9,7 @@ namespace ScriptNamespace
     {
         public static int Main(string[] args)
         {
-            // args = new[] { ""-service"" };
+            //args = new[] { "-service" };
 
             try
             {
@@ -48,9 +17,9 @@ namespace ScriptNamespace
                 {
                     Console.WriteLine(ScriptClass.ScriptLogic(args));
                 }
-                else if (args.Length == 1 && args[0].StartsWith(""-service""))
+                else if (args.Length == 1 && args[0].StartsWith("-service"))
                 {
-                    using (var host = StartScriptLogicAsRest(args[0].Substring(""-service"".Length), () => ScriptLogic(args.Skip(1).ToArray())))
+                    using (var host = StartScriptLogicAsRest(args[0].Substring("-service".Length), () => ScriptLogic(args.Skip(1).ToArray())))
                     {
                         Console.ReadLine();
                         host.Close();
@@ -66,16 +35,14 @@ namespace ScriptNamespace
 
         public static string ScriptLogic(string[] args)
         {
-                    // <CODE from repo>
-                    ");
-                        }
+            // <CODE from repo>
 
-                code.AppendLine(line);
-            }
+            StringBuilder builder = new StringBuilder(100);
+            builder.AppendLine("hello world");
+            builder.AppendLine("hello world2");
+            return builder.ToString();
 
-        code.AppendLine(
-@"
-             // </CODE from repo>
+            // </CODE from repo>
 
             return null;
         }
@@ -83,7 +50,7 @@ namespace ScriptNamespace
         public static System.Net.HttpListener StartScriptLogicAsRest(string serviceParameter, Func<object> func)
         {
             var listener = new System.Net.HttpListener();
-            listener.Prefixes.Add(string.Format(""http://localhost:4567/{0}/"", System.Diagnostics.Process.GetCurrentProcess().ProcessName));
+            listener.Prefixes.Add(string.Format("http://localhost:4567/{0}/", System.Diagnostics.Process.GetCurrentProcess().ProcessName));
             listener.Start();
 
             while (true)
@@ -105,11 +72,5 @@ namespace ScriptNamespace
             }
             return listener;
         }
-    }
-}
-");
-
-        content = code.ToString();
-        return true;
     }
 }

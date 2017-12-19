@@ -1,1 +1,0 @@
-cmd /c title C# Script Environment && prompt C#$S($T$H$H$H)$G && cls && echo csse help: && csse help && echo. && cmd 

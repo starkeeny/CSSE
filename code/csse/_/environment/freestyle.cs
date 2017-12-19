@@ -92,7 +92,12 @@ namespace ScriptNamespace
                 System.Net.HttpListenerRequest request = context.Request;
                 System.Net.HttpListenerResponse response = context.Response;
 
-                string responseString = func().ToString();
+                object returnValue = func();
+                if(returnValue == null)
+                {
+                    returnValue = string.Empty;
+                }
+                string responseString = returnValue.ToString();
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
 
                 // Get a response stream and write the response to it.
